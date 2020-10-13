@@ -1,15 +1,17 @@
-# dotenv-cli
+# dotenv-override-cli
+
+> It's [dotenv-cli](https://github.com/entropitor/dotenv-cli), but with the [override feature](https://github.com/motdotla/dotenv/issues/199).
 
 ## Installing
 
 NPM
 ```bash
-$ npm install -g dotenv-cli
+$ npm install -g dotenv-override-cli
 ```
 
 Yarn
 ```bash
-$ yarn global add dotenv-cli
+$ yarn global add dotenv-override-cli
 ```
 
 ## Usage
@@ -34,7 +36,15 @@ $ dotenv -e .env3 -e .env4 <command with arguments>
 ### Cascading env variables
 Some applications load from `.env`, `.env.local`, `.env.development` and `.env.development.local`
 (see [#37](https://github.com/entropitor/dotenv-cli/issues/37) for more information).
-`dotenv-cli` supports this using the `-c` flag for just `.env` and `.env.local` and `-c development` for the ones above.
+`dotenv-override-cli` supports this using the `-c` flag for just `.env` and `.env.local` and `-c development` for the ones above.
+
+### Overriding env variables
+If you want to override system wide environment variables, use the `-o` or `--override` flag.
+
+E.g. if your `.env` file contains `MY_ENV=bar`, that will override `MY_ENV=foo`:
+```bash
+$ MY_ENV=foo dotenv -o <command with arguments>
+```
 
 ### Check env variable
 If you want to check the value of an environment variable, use the `-p` flag
@@ -43,21 +53,21 @@ $ dotenv -p NODE_ENV
 ```
 
 ### Flags to the underlying command
-If you want to pass flags to the inner command use `--` after all the flags to `dotenv-cli`. 
+If you want to pass flags to the inner command use `--` after all the flags to `dotenv-override-cli`.
 
-E.g. the following command without dotenv-cli:
+E.g. the following command without dotenv-override-cli:
 ```bash
 mvn exec:java -Dexec.args="-g -f"
 ```
 
-will become the following command with dotenv-cli:
+will become the following command with dotenv-override-cli:
 ```bash
 $ dotenv -- mvn exec:java -Dexec.args="-g -f"
-``` 
+```
 or in case the env file is at `.my-env`
 ```bash
 $ dotenv -e .my-env -- mvn exec:java -Dexec.args="-g -f"
-``` 
+```
 
 ### Variable expansion
 We support expanding env variables inside .env files (See [dotenv-expand](https://github.com/motdotla/dotenv-expand) npm package for more information)
@@ -78,7 +88,7 @@ If your `.env` file looks like:
 SAY_HI=hello!
 ```
 
-you might expect `dotenv echo "$SAY_HI"` to display `hello!`. In fact, this is not what happens: your shell will first interpret your command before passing it to `dotenv-cli`, so if `SAY_HI` envvar is set to `""`, the command will be expanded into `dotenv echo`: that's why `dotenv-cli` cannot make the expansion you expect.
+you might expect `dotenv echo "$SAY_HI"` to display `hello!`. In fact, this is not what happens: your shell will first interpret your command before passing it to `dotenv-override-cli`, so if `SAY_HI` envvar is set to `""`, the command will be expanded into `dotenv echo`: that's why `dotenv-override-cli` cannot make the expansion you expect.
 
 One possible way to get the desired result is:
 
@@ -88,7 +98,7 @@ $ dotenv -- bash -c 'echo "$SAY_HI"'
 
 In bash, everything between `'` is not interpreted but passed as is. Since `$SAY_HI` is inside `''` brackets, it's passed as a string literal.
 
-Therefore, `dotenv-cli` will start a child process `bash -c 'echo "$SAY_HI"'` with the env variable `SAY_HI` set correctly which means bash will run `echo "$SAY_HI"` in the right environment which will print correctly `hello`
+Therefore, `dotenv-override-cli` will start a child process `bash -c 'echo "$SAY_HI"'` with the env variable `SAY_HI` set correctly which means bash will run `echo "$SAY_HI"` in the right environment which will print correctly `hello`
 
 ### Debugging
 
