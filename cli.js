@@ -27,7 +27,6 @@ if (argv.help) {
 }
 
 var paths = []
-var override = argv.o || argv.override
 
 if (argv.e) {
   if (typeof argv.e === 'string') {
@@ -54,13 +53,7 @@ if (argv.debug) {
 
 paths.forEach(function (env) {
   var config = dotenv.config({ path: path.resolve(env) })
-  dotenvExpand({ ...config, override })
-
-  if (override) {
-    Object.keys(config.parsed).forEach((key) => {
-      process.env[key] = config.parsed[key]
-    })
-  }
+  dotenvExpand({ ...config, override: argv.o || argv.override })
 })
 
 if (argv.p) {
